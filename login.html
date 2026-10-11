@@ -80,7 +80,6 @@
 
         <form id="loginForm">
             <label for="userRole">Login As</label>
-
             <select id="userRole" name="role" required>
                 <option value="buyer">Buyer</option>
                 <option value="seller">Seller</option>
@@ -165,11 +164,26 @@
                     })
                 });
 
-                const data = await response.json();
+                const responseText = await response.text();
+
+                console.log("Login response status:", response.status);
+                console.log("Login response body:", responseText);
+
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        "Server returned a non-JSON response. Status: " +
+                        response.status
+                    );
+                }
 
                 if (!response.ok || !data.success) {
                     message.className = "message error";
-                    message.textContent = data.message || "Login failed. Check your details.";
+                    message.textContent =
+                        data.message || "Login failed. Check your details.";
                     return;
                 }
 
@@ -181,10 +195,14 @@
 
                 localStorage.setItem("selectedRole", roleSelect.value);
                 localStorage.setItem("authToken", data.token || "");
-                localStorage.setItem("currentUser", JSON.stringify(data.user || {}));
+                localStorage.setItem(
+                    "currentUser",
+                    JSON.stringify(data.user || {})
+                );
 
                 message.className = "message success";
-                message.textContent = "Login successful! Opening your page...";
+                message.textContent =
+                    "Login successful! Opening your page...";
 
                 window.location.href = pages[roleSelect.value];
 
@@ -192,8 +210,230 @@
                 console.error("Login error:", error);
 
                 message.className = "message error";
+                message.textContent = error.message ||
+                    "Unable to connect to the server. Please try again.";
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        });
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santhiya Mart Login</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e8f5e9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 320px;
+            max-width: calc(100% - 60px);
+            box-shadow: 0 5px 20px #0002;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #237a3b;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            box-sizing: border-box;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #237a3b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:disabled {
+            background: #888;
+            cursor: not-allowed;
+        }
+
+        .message {
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+        <h1>🛒 Santhiya Mart</h1>
+        <h2 id="roleTitle">Buyer Login 🛍️</h2>
+
+        <form id="loginForm">
+            <label for="userRole">Login As</label>
+            <select id="userRole" name="role" required>
+                <option value="buyer">Buyer</option>
+                <option value="seller">Seller</option>
+                <option value="owner">Owner</option>
+            </select>
+
+            <label for="username">Username</label>
+            <input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Enter username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button id="loginButton" type="submit">Login</button>
+
+            <p style="text-align:center; margin-top:18px;">
+                Don't have an account?
+                <a href="register.html">Create Account</a>
+            </p>
+
+            <p id="message" class="message" role="status"></p>
+        </form>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById("userRole");
+        const roleTitle = document.getElementById("roleTitle");
+        const loginForm = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+        const loginButton = document.getElementById("loginButton");
+
+        const pages = {
+            buyer: "index.html",
+            seller: "seller.html",
+            owner: "owner.html"
+        };
+
+        const titles = {
+            buyer: "Buyer Login 🛍️",
+            seller: "Seller Login 🏪",
+            owner: "Owner Login 👑"
+        };
+
+        roleSelect.addEventListener("change", function () {
+            roleTitle.textContent = titles[roleSelect.value];
+            message.textContent = "";
+            message.className = "message";
+        });
+
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            message.textContent = "";
+            message.className = "message";
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Checking...";
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value.trim(),
+                        password: document.getElementById("password").value,
+                        role: roleSelect.value
+                    })
+                });
+
+                const responseText = await response.text();
+
+                console.log("Login response status:", response.status);
+                console.log("Login response body:", responseText);
+
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        "Server returned a non-JSON response. Status: " +
+                        response.status
+                    );
+                }
+
+                if (!response.ok || !data.success) {
+                    message.className = "message error";
+                    message.textContent =
+                        data.message || "Login failed. Check your details.";
+                    return;
+                }
+
+                if (!pages[roleSelect.value]) {
+                    message.className = "message error";
+                    message.textContent = "Invalid user role.";
+                    return;
+                }
+
+                localStorage.setItem("selectedRole", roleSelect.value);
+                localStorage.setItem("authToken", data.token || "");
+                localStorage.setItem(
+                    "currentUser",
+                    JSON.stringify(data.user || {})
+                );
+
+                message.className = "message success";
                 message.textContent =
-                    "Server connection failed. Make sure the server is running.";
+                    "Login successful! Opening your page...";
+
+                window.location.href = pages[roleSelect.value];
+
+            } catch (error) {
+                console.error("Login error:", error);
+
+                message.className = "message error";
+                message.textContent = error.message ||
+                    "Unable to connect to the server. Please try again.";
             } finally {
                 loginButton.disabled = false;
                 loginButton.textContent = "Login";
