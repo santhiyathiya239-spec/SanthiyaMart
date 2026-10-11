@@ -70,6 +70,7 @@ router.get("/", (req, res) => {
 // =====================================================
 // REGISTER
 // =====================================================
+
 router.post("/register", async (req, res) => {
     try {
         const { name, email, username, password, role } =
@@ -165,6 +166,7 @@ router.post("/register", async (req, res) => {
 // =====================================================
 // LOGIN
 // =====================================================
+
 router.post("/login", async (req, res) => {
     try {
         const { username, password, role } = req.body || {};
@@ -183,10 +185,25 @@ router.post("/login", async (req, res) => {
             });
         }
 
+        // Safe diagnostics: never print the secret itself
+        console.log(
+            "JWT_SECRET exists:",
+            Boolean(process.env.JWT_SECRET)
+        );
+
+        console.log(
+            "JWT_SECRET length:",
+            process.env.JWT_SECRET?.length || 0
+        );
+
         if (
             !process.env.JWT_SECRET ||
             process.env.JWT_SECRET.length < 32
         ) {
+            console.error(
+                "Login blocked: JWT_SECRET is missing or too short."
+            );
+
             return res.status(500).json({
                 success: false,
                 message: "Server authentication is not configured."
@@ -258,6 +275,7 @@ router.post("/login", async (req, res) => {
 // =====================================================
 // FORGOT PASSWORD — SEND OTP TO REGISTERED EMAIL
 // =====================================================
+
 router.post("/forgot-password", async (req, res) => {
     try {
         const email =
@@ -346,7 +364,7 @@ router.post("/forgot-password", async (req, res) => {
             // Verify Gmail SMTP connection
             await transporter.verify();
 
-            // Send OTP to THIS user's registered email
+            // Send OTP to the user's registered email
             const info = await transporter.sendMail({
                 from: `"Santhiya Mart" <${process.env.SMTP_EMAIL}>`,
                 to: user.email,
@@ -393,6 +411,7 @@ router.post("/forgot-password", async (req, res) => {
 // =====================================================
 // VERIFY OTP
 // =====================================================
+
 router.post("/verify-reset-otp", async (req, res) => {
     try {
         const email =
@@ -480,6 +499,7 @@ router.post("/verify-reset-otp", async (req, res) => {
 // =====================================================
 // RESET PASSWORD
 // =====================================================
+
 router.post("/reset-password", async (req, res) => {
     let connection;
 
