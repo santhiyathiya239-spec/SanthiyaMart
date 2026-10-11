@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders | Santhiya Mart</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7f5;
+            color: #26332b;
+        }
+
+        header {
+            background: #176b45;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .top-bar h2 {
+            font-size: 25px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            background: white;
+            color: #176b45;
+        }
+
+        .refresh-btn {
+            background: #176b45;
+            color: white;
+        }
+
+        .table-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 12px #0000000d;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5eae6;
+        }
+
+        th {
+            background: #edf6f0;
+            color: #176b45;
+        }
+
+        #message {
+            padding: 20px;
+            text-align: center;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #b42318 !important;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Santhiya Mart</h1>
+        <button class="back-btn" onclick="goBack()">
+            Back to Dashboard
+        </button>
+    </header>
+
+    <main class="container">
+        <div class="top-bar">
+            <h2>Customer Orders</h2>
+            <button class="refresh-btn" onclick="loadOrders()">
+                Refresh Orders
+            </button>
+        </div>
+
+        <section class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="ordersTable">
+                    <tr>
+                        <td colspan="5" id="message">
+                            Loading orders...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="note">
+                Orders will appear here after the orders API is connected
+                to your database.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        function goBack() {
+            window.location.href = "owner.html";
+        }
+
+        async function loadOrders() {
+            const table = document.getElementById("ordersTable");
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" id="message">Loading orders...</td>
+                </tr>
+            `;
+
+            const token = localStorage.getItem("authToken");
+            const selectedRole = localStorage.getItem("selectedRole");
+
+            if (!token) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" id="message" class="error">
+                            Please log in to view orders.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            if (selectedRole !== "owner") {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" id="message" class="error">
+                            Owner access is required.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/orders", {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Unable to load orders."
+                    );
+                }
+
+                const orders = Array.isArray(data)
+                    ? data
+                    : data.orders;
+
+                if (!Array.isArray(orders)) {
+                    throw new Error(
+                        "The orders API response format is not supported."
+                    );
+                }
+
+                if (orders.length === 0) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="5" id="message">
+                                No orders found.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                table.innerHTML = "";
+
+                orders.forEach(order => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        order.id ?? order.order_id ?? "-",
+                        order.customer_name ?? order.name ?? "-",
+                        order.order_date ?? order.created_at ?? "-",
+                        order.total_amount ?? order.total ?? "-",
+                        order.status ?? "Pending"
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = String(value);
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+            } catch (error) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" id="message" class="error"></td>
+                    </tr>
+                `;
+
+                document.getElementById("message").textContent =
+                    error.message.includes("Failed to fetch")
+                        ? "Cannot connect to the server. Check whether Node.js is running."
+                        : error.message;
+            }
+        }
+
+        loadOrders();
+    </script>
+</body>
+</html>

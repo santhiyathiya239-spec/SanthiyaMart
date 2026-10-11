@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product - Santhiya Mart</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f4f8;color:#222}
+header{background:#263b80;color:white;padding:20px;text-align:center}
+main{max-width:650px;margin:30px auto;padding:25px;background:white;border-radius:12px}
+h2{color:#263b80}
+label{display:block;font-weight:bold;margin-top:15px}
+input,textarea,select{width:100%;padding:12px;margin-top:7px;border:1px solid #ccc;border-radius:6px;font-size:15px}
+textarea{min-height:80px}
+button{width:100%;margin-top:22px;padding:14px;background:#263b80;color:white;border:0;border-radius:7px;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6}
+a{color:#263b80}
+#message{margin-top:18px;overflow-wrap:anywhere}
+#preview{display:none;max-width:150px;max-height:150px;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+<h1>🛒 Santhiya Mart</h1>
+<p>Add New Product</p>
+</header>
+
+<main>
+<h2>Product Details</h2>
+<p><a href="/products.html">← Back to Products</a></p>
+
+<form id="productForm">
+<label for="name">Product Name *</label>
+<input id="name" maxlength="150" required placeholder="Enter product name">
+
+<label for="price">Price (₹) *</label>
+<input id="price" type="number" min="0" max="99999999.99" step="0.01" required placeholder="Enter price">
+
+<label for="stock">Stock Quantity *</label>
+<input id="stock" type="number" min="0" step="1" required placeholder="Enter stock">
+
+<label for="category">Category</label>
+<select id="category">
+<option value="">Select category</option>
+<option>Grocery</option>
+<option>Snacks</option>
+<option>Beverages</option>
+<option>Dairy</option>
+<option>Personal Care</option>
+<option>Household</option>
+<option>Fruits</option>
+<option>Vegetables</option>
+<option>Bakery</option>
+<option>Other</option>
+</select>
+
+<label for="description">Description</label>
+<textarea id="description" placeholder="Enter description"></textarea>
+
+<label for="image_url">Image URL</label>
+<input id="image_url" type="url" placeholder="https://example.com/image.jpg">
+<img id="preview" alt="Product image preview">
+
+<button id="saveBtn" type="submit">Save Product</button>
+</form>
+
+<p id="message" role="status" aria-live="polite"></p>
+</main>
+
+<script>
+const form = document.getElementById("productForm");
+const message = document.getElementById("message");
+const saveBtn = document.getElementById("saveBtn");
+const imageInput = document.getElementById("image_url");
+const preview = document.getElementById("preview");
+
+imageInput.addEventListener("input", function () {
+  preview.style.display = "none";
+
+  if (!imageInput.value.trim()) return;
+
+  try {
+    const url = new URL(imageInput.value.trim());
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") return;
+
+    preview.onload = () => preview.style.display = "block";
+    preview.onerror = () => preview.style.display = "none";
+    preview.src = url.href;
+  } catch {
+    preview.removeAttribute("src");
+  }
+});
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const priceText = document.getElementById("price").value;
+  const stockText = document.getElementById("stock").value;
+  const price = Number(priceText);
+  const stock = Number(stockText);
+
+  if (
+    !document.getElementById("name").value.trim() ||
+    priceText === "" ||
+    stockText === "" ||
+    !Number.isFinite(price) ||
+    price < 0 ||
+    price > 99999999.99 ||
+    !Number.isInteger(stock) ||
+    stock < 0
+  ) {
+    message.textContent = "Please enter a valid name, price and stock.";
+    return;
+  }
+
+  const product = {
+    name: document.getElementById("name").value.trim(),
+    price: price,
+    stock: stock,
+    category: document.getElementById("category").value,
+    description: document.getElementById("description").value.trim(),
+    image_url: imageInput.value.trim()
+  };
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+  message.textContent = "";
+
+  try {
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(product)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Product could not be saved.");
+    }
+
+    message.textContent =
+      "✅ Product saved successfully! ID: " + result.productId;
+
+    form.reset();
+    preview.style.display = "none";
+    preview.removeAttribute("src");
+  } catch (error) {
+    message.textContent = "❌ " + error.message;
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Product";
+  }
+});
+</script>
+</body>
+
+<a href="index.html">← Back to Home</a>
+<a href="owner.html">Owner Dashboard</a>
+<a href="seller.html">Seller Dashboard</a>
+<a href="products.html">View Products</a>
+ 
+<nav style="display:flex; gap:12px; padding:15px; background:#fff; border-radius:10px; margin-bottom:20px;">
+  <a href="index.html" style="text-decoration:none; background:#2563eb; color:white; padding:10px 18px; border-radius:8px;">← Dashboard</a>
+  <a href="products.html" style="text-decoration:none; background:#16a34a; color:white; padding:10px 18px; border-radius:8px;">View Products</a>
+</nav>
+
+
+</html>

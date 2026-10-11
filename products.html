@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Santhiya MART - Products</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8f6;
+            color: #123f32;
+        }
+
+        header {
+            background: #123f32;
+            color: white;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        .back {
+            background: #a47c32;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            max-width: 1200px;
+            width: 92%;
+            margin: 30px auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px #00000010;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            margin-bottom: 18px;
+        }
+
+        .search {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #e5eae6;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px #00000012;
+        }
+
+        .image-box {
+            height: 190px;
+            background: #e9f3ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-fallback {
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .product-info h3 {
+            margin-bottom: 9px;
+            font-size: 18px;
+        }
+
+        .description {
+            color: #666;
+            font-size: 13px;
+            min-height: 34px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 21px;
+            font-weight: bold;
+            color: #176b52;
+            margin-bottom: 8px;
+        }
+
+        .stock {
+            font-size: 13px;
+            margin-bottom: 14px;
+            color: #666;
+        }
+
+        button {
+            padding: 10px 14px;
+            background: #176b52;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #123f32;
+        }
+
+        button:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .add-button {
+            width: 100%;
+        }
+
+        .remove {
+            background: #b83232;
+        }
+
+        .message {
+            padding: 14px;
+            background: #f0f5f1;
+            border-radius: 8px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        .cart-image {
+            width: 75px;
+            height: 75px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #e9f3ed;
+        }
+
+        .cart-details {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .cart-details p {
+            margin-top: 6px;
+            color: #555;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quantity-controls button {
+            min-width: 32px;
+            padding: 8px;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .empty {
+            color: #666;
+            padding: 12px 0;
+        }
+
+        footer {
+            text-align: center;
+            color: #777;
+            padding: 25px;
+        }
+
+        @media (max-width: 500px) {
+            .panel {
+                padding: 16px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .image-box {
+                height: 135px;
+            }
+
+            .product-info {
+                padding: 10px;
+            }
+
+            .product-info h3 {
+                font-size: 15px;
+            }
+
+            .price {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🛒 Santhiya MART</h1>
+    <a class="back" href="owner.html">← Back to Owner</a>
+</header>
+
+<main>
+    <section class="panel">
+        <h2>🛍️ Our Products</h2>
+
+        <div id="message" class="message">
+            Loading products...
+        </div>
+
+        <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="🔍 Search products..."
+            aria-label="Search products"
+        >
+
+        <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <section class="panel" id="cart">
+        <h2>🛒 My Cart (<span id="cartCount">0</span>)</h2>
+
+        <div id="cartItems">
+            <p class="empty">Your cart is empty.</p>
+        </div>
+
+        <div class="cart-total">
+            Total: <span id="cartTotal">₹0.00</span>
+        </div>
+
+        <div class="cart-actions">
+            <button id="clearCart" class="remove">Clear Cart</button>
+            <button id="checkout">Proceed to Checkout</button>
+        </div>
+
+        <p class="empty" style="margin-top:12px">
+            Checkout and database order saving will be added next.
+        </p>
+    </section>
+</main>
+
+<footer>© 2026 Santhiya MART</footer>
+
+<script>
+    let products = [];
+    let cart = loadSavedCart();
+
+    // Sample images are used when image_url is empty in MySQL.
+    const defaultImages = {
+        "rice":
+            "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80",
+        "sugar":
+            "https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&w=600&q=80",
+        "cooking oil":
+            "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80",
+        "biscuits":
+            "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+        "soap":
+            "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?auto=format&fit=crop&w=600&q=80"
+    };
+
+    const defaultEmojis = {
+        "rice": "🍚",
+        "sugar": "🧂",
+        "cooking oil": "🫒",
+        "biscuits": "🍪",
+        "soap": "🧼"
+    };
+
+    function getProductImage(product) {
+        const savedImage = String(product.image_url || "").trim();
+
+        // Only allow web image URLs from the database.
+        if (/^https?:\/\//i.test(savedImage)) {
+            return savedImage;
+        }
+
+        const name = String(product.name || "").toLowerCase();
+
+        return defaultImages[name] || "";
+    }
+
+    function getProductEmoji(product) {
+        const name = String(product.name || "").toLowerCase();
+        return defaultEmojis[name] || "🛍️";
+    }
+
+    function loadSavedCart() {
+        try {
+            const saved = JSON.parse(
+                localStorage.getItem("santhiyaMartCart") || "[]"
+            );
+
+            return Array.isArray(saved) ? saved : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem(
+            "santhiyaMartCart",
+            JSON.stringify(cart)
+        );
+    }
+
+    function makeImage(product, className) {
+        const wrapper = document.createElement("div");
+
+        if (className === "product-image") {
+            wrapper.className = "image-box";
+        }
+
+        const img = document.createElement("img");
+        img.className = className;
+        img.alt = product.name || "Product";
+        img.loading = "lazy";
+
+        const fallback = document.createElement("div");
+        fallback.className = "image-fallback";
+        fallback.textContent = getProductEmoji(product);
+        fallback.setAttribute("role", "img");
+        fallback.setAttribute("aria-label", product.name || "Product");
+
+        img.onerror = function () {
+            this.style.display = "none";
+            fallback.style.display = "flex";
+        };
+
+        const imageUrl = getProductImage(product);
+
+        if (imageUrl) {
+            img.src = imageUrl;
+        } else {
+            img.style.display = "none";
+            fallback.style.display = "flex";
+        }
+
+        if (className === "product-image") {
+            wrapper.append(img, fallback);
+            return wrapper;
+        }
+
+        // Cart images use the same fallback behaviour.
+        const cartWrapper = document.createElement("div");
+        cartWrapper.style.width = "75px";
+        cartWrapper.style.height = "75px";
+        cartWrapper.style.flexShrink = "0";
+        cartWrapper.style.overflow = "hidden";
+        cartWrapper.style.borderRadius = "8px";
+        cartWrapper.style.background = "#e9f3ed";
+        cartWrapper.style.position = "relative";
+
+        img.style.position = "absolute";
+        img.style.inset = "0";
+
+        fallback.style.position = "absolute";
+        fallback.style.inset = "0";
+        fallback.style.fontSize = "34px";
+
+        cartWrapper.append(img, fallback);
+        return cartWrapper;
+    }
+
+    async function loadProducts() {
+        const message = document.getElementById("message");
+        const grid = document.getElementById("productGrid");
+
+        try {
+            const response = await fetch("/api/products");
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Could not load products."
+                );
+            }
+
+            products = Array.isArray(data.products)
+                ? data.products
+                : [];
+
+            cart = cart
+                .filter(item =>
+                    products.some(p =>
+                        Number(p.id) === Number(item.id)
+                    )
+                )
+                .map(item => {
+                    const product = products.find(
+                        p => Number(p.id) === Number(item.id)
+                    );
+
+                    const stock = Math.max(
+                        0,
+                        Number(product.stock) || 0
+                    );
+
+                    return {
+                        ...item,
+                        name: product.name,
+                        price: Number(product.price),
+                        quantity: Math.min(
+                            Math.max(1, Number(item.quantity) || 1),
+                            stock
+                        )
+                    };
+                })
+                .filter(item => item.quantity > 0);
+
+            saveCart();
+
+            message.textContent = products.length
+                ? "Products loaded successfully!"
+                : "No products found in the database.";
+
+            renderProducts();
+            renderCart();
+
+        } catch (error) {
+            grid.replaceChildren();
+            message.textContent =
+                "Unable to load products. Please check that the server is running.";
+            console.error("Load products error:", error);
+        }
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById("productGrid");
+        const query = document.getElementById("search")
+            .value.trim().toLowerCase();
+
+        grid.replaceChildren();
+
+        const filtered = products.filter(product =>
+            String(product.name || "")
+                .toLowerCase()
+                .includes(query)
+        );
+
+        if (filtered.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "empty";
+            empty.textContent = "No matching products found.";
+            grid.appendChild(empty);
+            return;
+        }
+
+        filtered.forEach(product => {
+            const card = document.createElement("article");
+            card.className = "product-card";
+
+            card.appendChild(makeImage(product, "product-image"));
+
+            const info = document.createElement("div");
+            info.className = "product-info";
+
+            const name = document.createElement("h3");
+            name.textContent = product.name;
+
+            const description = document.createElement("p");
+            description.className = "description";
+            description.textContent =
+                product.description || product.category || "Quality product";
+
+            const price = document.createElement("p");
+            price.className = "price";
+            price.textContent =
+                "₹" + Number(product.price).toFixed(2);
+
+            const stock = document.createElement("p");
+            stock.className = "stock";
+            stock.textContent =
+                "Stock available: " + Number(product.stock);
+
+            const button = document.createElement("button");
+            button.className = "add-button";
+
+            const item = cart.find(
+                p => Number(p.id) === Number(product.id)
+            );
+
+            const available = Math.max(
+                0,
+                Number(product.stock) || 0
+            );
+
+            button.disabled = available === 0 ||
+                (item && item.quantity >= available);
+
+            button.textContent = available === 0
+                ? "Out of Stock"
+                : item && item.quantity >= available
+                    ? "Stock Limit Reached"
+                    : "🛒 Add to Cart";
+
+            button.addEventListener("click", () => {
+                addToCart(product.id);
+            });
+
+            info.append(name, description, price, stock, button);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+    }
+
+    function addToCart(productId) {
+        const product = products.find(
+            p => Number(p.id) === Number(productId)
+        );
+
+        if (!product) return;
+
+        const stock = Math.max(0, Number(product.stock) || 0);
+
+        if (stock <= 0) {
+            alert("This product is out of stock.");
+            return;
+        }
+
+        const item = cart.find(
+            p => Number(p.id) === Number(productId)
+        );
+
+        if (item) {
+            if (item.quantity >= stock) {
+                alert("Available stock limit reached.");
+                return;
+            }
+
+            item.quantity++;
+        } else {
+            cart.push({
+                id: Number(product.id),
+                name: product.name,
+                price: Number(product.price),
+                quantity: 1
+            });
+        }
+
+        saveCart();
+        renderProducts();
+        renderCart();
+    }
+
+    function changeQuantity(productId, change) {
+        const item = cart.find(
+            p => Number(p.id) === Number(productId)
+        );
+
+        const product = products.find(
+            p => Number(p.id) === Number(productId)
+        );
+
+        if (!item || !product) return;
+
+        const nextQuantity = item.quantity + change;
+        const stock = Math.max(0, Number(product.stock) || 0);
+
+        if (nextQuantity <= 0) {
+            cart = cart.filter(
+                p => Number(p.id) !== Number(productId)
+            );
+        } else if (nextQuantity <= stock) {
+            item.quantity = nextQuantity;
+        } else {
+            alert("Only " + stock + " item(s) available.");
+            return;
+        }
+
+        saveCart();
+        renderProducts();
+        renderCart();
+    }
+
+    function removeFromCart(productId) {
+        cart = cart.filter(
+            item => Number(item.id) !== Number(productId)
+        );
+
+        saveCart();
+        renderProducts();
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById("cartItems");
+        container.replaceChildren();
+
+        let total = 0;
+        let count = 0;
+
+        if (cart.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "empty";
+            empty.textContent = "Your cart is empty.";
+            container.appendChild(empty);
+        }
+
+        cart.forEach(item => {
+            const product = products.find(
+                p => Number(p.id) === Number(item.id)
+            );
+
+            if (!product) return;
+
+            const lineTotal = Number(item.price) * item.quantity;
+            total += lineTotal;
+            count += item.quantity;
+
+            const row = document.createElement("div");
+            row.className = "cart-item";
+
+            row.appendChild(makeImage(product, "cart-image"));
+
+            const details = document.createElement("div");
+            details.className = "cart-details";
+
+            const name = document.createElement("strong");
+            name.textContent = item.name;
+
+            const price = document.createElement("p");
+            price.textContent =
+                "₹" + Number(item.price).toFixed(2) +
+                " × " + item.quantity +
+                " = ₹" + lineTotal.toFixed(2);
+
+            details.append(name, price);
+
+            const controls = document.createElement("div");
+            controls.className = "quantity-controls";
+
+            const minus = document.createElement("button");
+            minus.textContent = "−";
+            minus.setAttribute("aria-label", "Decrease quantity");
+            minus.addEventListener("click", () =>
+                changeQuantity(item.id, -1)
+            );
+
+            const quantity = document.createElement("span");
+            quantity.textContent = item.quantity;
+
+            const plus = document.createElement("button");
+            plus.textContent = "+";
+            plus.disabled =
+                item.quantity >= (Number(product.stock) || 0);
+
+            plus.addEventListener("click", () =>
+                changeQuantity(item.id, 1)
+            );
+
+            const remove = document.createElement("button");
+            remove.className = "remove";
+            remove.textContent = "Remove";
+            remove.addEventListener("click", () =>
+                removeFromCart(item.id)
+            );
+
+            controls.append(minus, quantity, plus, remove);
+            row.append(details, controls);
+            container.appendChild(row);
+        });
+
+        document.getElementById("cartCount").textContent = count;
+        document.getElementById("cartTotal").textContent =
+            "₹" + total.toFixed(2);
+
+        document.getElementById("checkout").disabled =
+            cart.length === 0;
+
+        document.getElementById("clearCart").disabled =
+            cart.length === 0;
+    }
+
+    document.getElementById("search").addEventListener(
+        "input",
+        renderProducts
+    );
+
+    document.getElementById("clearCart").addEventListener("click", () => {
+        if (!cart.length) return;
+
+        if (confirm("Are you sure you want to clear your cart?")) {
+            cart = [];
+            saveCart();
+            renderProducts();
+            renderCart();
+        }
+    });
+
+    document.getElementById("checkout").addEventListener("click", () => {
+        if (!cart.length) {
+            alert("Your cart is empty.");
+            return;
+        }
+
+        alert(
+            "Cart is ready! Database checkout will be connected next."
+        );
+    });
+
+    loadProducts();
+</script>
+
+</body>
+</html>

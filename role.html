@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Santhiya GROCERY MART - Select Role</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-family: Arial, sans-serif;
+
+            background: linear-gradient(
+                135deg,
+                #e5f3e8,
+                #fffdf7
+            );
+        }
+
+        .role-container {
+            width: 500px;
+            max-width: 90%;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 10px 35px rgba(0,0,0,0.12);
+        }
+
+        .logo {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #176b52;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #a47c32;
+            font-size: 13px;
+            letter-spacing: 3px;
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #24352b;
+            margin-bottom: 25px;
+        }
+
+        .roles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .role-btn {
+            padding: 25px 10px;
+
+            border: 2px solid #e5f3e8;
+            border-radius: 15px;
+
+            background: white;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-5px);
+
+            border-color: #176b52;
+
+            box-shadow:
+                0 8px 20px rgba(23,107,82,0.15);
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .role-name {
+            color: #176b52;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .role-description {
+            color: #777;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .back-home {
+            display: inline-block;
+
+            margin-top: 25px;
+
+            color: #a47c32;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+
+            .roles {
+                grid-template-columns: 1fr;
+            }
+
+            .role-container {
+                padding: 30px 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="role-container">
+
+        <div class="logo">🛒</div>
+
+        <h1>Santhiya</h1>
+
+        <div class="subtitle">
+            GROCERY MART
+        </div>
+
+        <h2>Select Your Role</h2>
+
+        <div class="roles">
+
+            <button
+                class="role-btn"
+                onclick="selectRole('buyer')">
+
+                <div class="role-icon">🛍️</div>
+
+                <div class="role-name">
+                    Buyer
+                </div>
+
+                <div class="role-description">
+                    Shop groceries
+                </div>
+
+            </button>
+
+
+            <button
+                class="role-btn"
+                onclick="selectRole('seller')">
+
+                <div class="role-icon">🏪</div>
+
+                <div class="role-name">
+                    Seller
+                </div>
+
+                <div class="role-description">
+                    Manage products
+                </div>
+
+            </button>
+
+
+            <button
+                class="role-btn"
+                onclick="selectRole('owner')">
+
+                <div class="role-icon">👑</div>
+
+                <div class="role-name">
+                    Owner
+                </div>
+
+                <div class="role-description">
+                    Manage store
+                </div>
+
+            </button>
+
+        </div>
+
+        <a href="index.html"
+           class="back-home">
+            ← Back to Home
+        </a>
+
+    </div>
+
+
+    <script>
+
+        
+
+     function selectRole(role) {
+        localStorage.setItem("selectedRole", role);
+        window.location.href = "login.html";
+}
+
+    </script>
+
+</body>
+
+</html>

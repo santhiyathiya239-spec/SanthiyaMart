@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Dashboard - Santhiya</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8f5;
+            color: #24352b;
+        }
+
+        header {
+            background: #176b52;
+            color: white;
+            padding: 18px 6%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .seller-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            color: #176b52;
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+            color: #777;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-icon {
+            font-size: 30px;
+        }
+
+        .stat-card h3 {
+            color: #176b52;
+            margin-top: 10px;
+        }
+
+        .stat-card p {
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .products-box {
+            background: white;
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .products-header h2 {
+            color: #176b52;
+        }
+
+        .add-btn {
+            background: #a47c32;
+            color: white;
+
+            border: none;
+            border-radius: 8px;
+
+            padding: 11px 18px;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #856323;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 10px;
+            text-align: left;
+
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            color: #176b52;
+        }
+
+        .stock {
+            font-weight: bold;
+            color: #176b52;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .edit {
+            background: #e8f5e9;
+            color: #176b52;
+        }
+
+        .delete {
+            background: #ffe8e8;
+            color: #c0392b;
+        }
+
+        .logout {
+            display: inline-block;
+
+            margin-top: 25px;
+
+            background: #123f32;
+            color: white;
+
+            padding: 11px 20px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .products-box {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 650px;
+            }
+
+            header {
+                padding: 15px 5%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            🛒 Santhiya
+        </div>
+
+        <div class="seller-label">
+            🏪 Seller Dashboard
+        </div>
+
+    </header>
+
+
+    <div class="container">
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, Seller! 👋
+            </h1>
+
+            <p>
+                Manage your grocery products and stock.
+            </p>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <h3 id="productCount">
+                    0
+                </h3>
+
+                <p>
+                    Total Products
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📊
+                </div>
+
+                <h3>
+                    105
+                </h3>
+
+                <p>
+                    Items in Stock
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🛒
+                </div>
+
+                <h3>
+                    0
+                </h3>
+
+                <p>
+                    New Orders
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="products-box">
+
+            <div class="products-header">
+
+                <h2>
+                    My Products
+                </h2>
+
+                <button
+                    class="add-btn"
+                    onclick="addProduct()">
+
+                    + Add Product
+
+                </button>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Stock
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="productTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <a
+            href="role.html"
+            class="logout">
+
+            ← Logout
+
+        </a>
+
+    </div>
+
+
+    <script>
+
+        const products = [
+
+            {
+                name: "Fresh Tomato",
+                category: "Vegetables",
+                price: 40,
+                stock: 30
+            },
+
+            {
+                name: "Potato",
+                category: "Vegetables",
+                price: 35,
+                stock: 25
+            },
+
+            {
+                name: "Fresh Apple",
+                category: "Fruits",
+                price: 120,
+                stock: 20
+            },
+
+            {
+                name: "Milk",
+                category: "Dairy",
+                price: 55,
+                stock: 15
+            }
+
+        ];
+
+
+        function displayProducts() {
+
+            const table =
+                document.getElementById(
+                    "productTable"
+                );
+
+            table.innerHTML = "";
+
+
+            products.forEach(
+                (product, index) => {
+
+                    table.innerHTML += `
+
+                        <tr>
+
+                            <td>
+                                ${product.name}
+                            </td>
+
+                            <td>
+                                ${product.category}
+                            </td>
+
+                            <td>
+                                ₹${product.price}
+                            </td>
+
+                            <td class="stock">
+                                ${product.stock}
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="action-btn edit"
+                                    onclick="editProduct(${index})">
+
+                                    Edit
+
+                                </button>
+
+                                <button
+                                    class="action-btn delete"
+                                    onclick="deleteProduct(${index})">
+
+                                    Delete
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+                }
+            );
+
+
+            document.getElementById(
+                "productCount"
+            ).innerText = products.length;
+
+        }
+
+
+        function addProduct() {
+
+            const name =
+                prompt("Enter product name:");
+
+            if (!name) return;
+
+
+            const category =
+                prompt("Enter category:");
+
+            if (!category) return;
+
+
+            const price =
+                prompt("Enter price:");
+
+            if (!price) return;
+
+
+            const stock =
+                prompt("Enter stock:");
+
+            if (!stock) return;
+
+
+            products.push({
+
+                name: name,
+
+                category: category,
+
+                price: price,
+
+                stock: stock
+
+            });
+
+
+            displayProducts();
+
+        }
+
+
+        function editProduct(index) {
+
+            const product =
+                products[index];
+
+
+            const newPrice =
+                prompt(
+                    "Enter new price:",
+                    product.price
+                );
+
+
+            if (newPrice) {
+
+                product.price =
+                    newPrice;
+
+            }
+
+
+            const newStock =
+                prompt(
+                    "Enter new stock:",
+                    product.stock
+                );
+
+
+            if (newStock) {
+
+                product.stock =
+                    newStock;
+
+            }
+
+
+            displayProducts();
+
+        }
+
+
+        function deleteProduct(index) {
+
+            const confirmDelete =
+                confirm(
+                    "Delete this product?"
+                );
+
+
+            if (confirmDelete) {
+
+                products.splice(index, 1);
+
+                displayProducts();
+
+            }
+
+        }
+
+
+        displayProducts();
+
+    </script>
+
+</body>
+
+</html>
