@@ -231,6 +231,9 @@ router.post("/login", async (req, res) => {
             password,
             user.password_hash
         );
+        console.log("Login username:", user.username);
+console.log("Login role:", user.role);
+console.log("Password matches:", passwordMatches);
 
         if (!passwordMatches) {
             return res.status(401).json({

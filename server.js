@@ -1,3 +1,8 @@
+
+require("dotenv").config({
+    path: require("path").join(__dirname, ".env")
+});
+
 const express = require("express");
 const path = require("path");
 const pool = require("./config/db");
@@ -17,6 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Health check API
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Santhiya Mart server is running"
+    });
+});
 
 // Main pages
 app.get("/", (req, res) => {
@@ -49,7 +62,7 @@ app.use(express.static(__dirname, {
     index: false
 }));
 
-// 404 handler — keep this at the end
+// 404 handler
 app.use((req, res) => {
     res.status(404).send(`Cannot find: ${req.method} ${req.path}`);
 });
@@ -57,6 +70,7 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
     console.error("Server error:", err.message);
+
     res.status(500).json({
         success: false,
         message: "Internal server error."
